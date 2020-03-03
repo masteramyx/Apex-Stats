@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'dart:io';
+import 'dart:convert';
 
 
 void main() => runApp(MyApp());
@@ -99,15 +101,19 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Text(
               '$_counter',
-              style: Theme.of(context).textTheme.display1,
+              style: Theme
+                  .of(context)
+                  .textTheme
+                  .display1,
             ),
             new Container(
-              child: new FutureBuilder<String>(
+              child: new FutureBuilder<Cases>(
                 future: fetchUsersFromApi(),
-                builder: (context, AsyncSnapshot<String> snapshot){
+                // ignore: missing_return
+                builder: (context, AsyncSnapshot<Cases> snapshot) {
                   if (snapshot.hasData) {
                     return new Text(
-                        snapshot.data
+                        snapshot.data.cases.toString()
                     );
                   }
                 },
@@ -124,10 +130,39 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Future<String> fetchUsersFromApi() async {
-    final response = await http.get('http://age-of-empires-2-api.herokuapp'
-        '.com/api/v1/civilizations');
-    return response.body;
+  Future<Cases> fetchUsersFromApi() async {
+    Map<String, String> headersDood = {
+      HttpHeaders.contentTypeHeader: "application/json",
+      HttpHeaders
+          .authorizationHeader: "Bearer d2d11a9b-cd4b-3da1-8482-6bb0ee8dfd48"
+    };
+    //AOE
+//    final response = await http.get('http://age-of-empires-2-api.herokuapp'
+//        '.com/api/v1/civilizations');
+    final response = await http.get('https://apigw.nubentos'
+        '.com:443/t/nubentos.com/ncovapi/1.0.0/cases',
+        headers: headersDood);
+    List responseJson = json.decode(response.body.toString());
+    Cases value = createCases(responseJson);
+    return value;
   }
 
+  Cases createCases(List data){
+    int caseNum = data[0]["cases"];
+    return new Cases(cases: caseNum);
+  }
+
+}
+
+
+class Cases {
+  int cases;
+
+  Cases({this.cases});
+}
+
+class Civilization {
+  int id;
+  String name;
+  
 }
