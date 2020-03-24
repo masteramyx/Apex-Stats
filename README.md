@@ -1,6 +1,17 @@
 # empires
 
-A new Flutter application to view AOE II information. 
+A new Flutter application to view Apex Legends Player Stats. User can search across 3 platforms; Xbox, Playstation
+ and PC(Origin). 
+
+
+#API
+
+using [Apex Tracker](https://apex.tracker.gg)
+
+GET https://public-api.tracker.gg/apex/v1/standard/profile/{PLATFORM}/{NAME}
+
+Platforms: 1 = XBOX 2 = PSN 5 = Origin / PC
+
 
 ## Getting Started
 
