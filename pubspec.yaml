@@ -18,6 +18,8 @@ environment:
 
 dependencies:
   fab_circular_menu: ^1.0.0
+  progress_dialog: ^1.2.1
+  cached_network_image: ^2.0.0
   flutter:
     sdk: flutter
 
