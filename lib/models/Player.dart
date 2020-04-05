@@ -1,10 +1,10 @@
 class PlayerResponse {
-  Map<String, dynamic> data;
+  PlayerData data;
 
   PlayerResponse({this.data});
 
   factory PlayerResponse.fromJson(Map<String, dynamic> parsedJson) {
-    return PlayerResponse(data: parsedJson['data']);
+    return PlayerResponse(data: PlayerData.fromJson(parsedJson['data']));
   }
 }
 
@@ -17,8 +17,8 @@ class PlayerData {
   factory PlayerData.fromJson(Map<String, dynamic> parsedJson) {
     //List<dynamic>
     var list = parsedJson['children'] as List;
-    List<CharacterObject> characterList = list.map((i) => CharacterObject.fromJson
-      (i)).toList();
+    List<CharacterObject> characterList =
+        list.map((i) => CharacterObject.fromJson(i)).toList();
     return PlayerData(
         player: parsedJson['metadata'], characters: characterList);
   }

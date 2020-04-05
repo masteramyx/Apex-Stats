@@ -257,8 +257,8 @@ class CustomSearchDelegate extends SearchDelegate {
         await http.get('$baseUrl/$platform/$username', headers: headersDood);
     final jsonResponse = jsonDecode(response.body);
     PlayerResponse playerResponse = new PlayerResponse.fromJson(jsonResponse);
-    PlayerData playerMetadata = new PlayerData.fromJson(playerResponse.data);
-    return playerMetadata;
+//    PlayerData playerMetadata = new PlayerData.fromJson(playerResponse.data);
+    return playerResponse.data;
   }
 }
 
