@@ -8,15 +8,19 @@ class PlayerResponse {
   }
 }
 
-class PlayerMetadata {
+class PlayerData {
   Map<String, dynamic> player;
-  List<dynamic> characters;
+  List<CharacterObject> characters;
 
-  PlayerMetadata({this.player, this.characters});
+  PlayerData({this.player, this.characters});
 
-  factory PlayerMetadata.fromJson(Map<String, dynamic> parsedJson) {
-    return PlayerMetadata(
-        player: parsedJson['metadata'], characters: parsedJson['children']);
+  factory PlayerData.fromJson(Map<String, dynamic> parsedJson) {
+    //List<dynamic>
+    var list = parsedJson['children'] as List;
+    List<CharacterObject> characterList = list.map((i) => CharacterObject.fromJson
+      (i)).toList();
+    return PlayerData(
+        player: parsedJson['metadata'], characters: characterList);
   }
 }
 
@@ -35,34 +39,34 @@ class Player {
   }
 }
 
-class CharacterList {
-  List<dynamic> characters;
+class CharacterObject {
+  String id;
+  String type;
+  Character characterInfo;
 
-  CharacterList({this.characters});
+  CharacterObject({this.id, this.type, this.characterInfo});
 
-  factory CharacterList.fromJson(List<dynamic> parsedJson) {
-    return CharacterList(characters: parsedJson);
-  }
-}
-
-
-class CharacterMeta {
-  Map<String, dynamic> characterInfo;
-
-  CharacterMeta({this.characterInfo});
-
-  factory CharacterMeta.fromJson(Map<String, dynamic> parsedJson) {
-    return CharacterMeta(characterInfo: parsedJson['metadata']);
+  factory CharacterObject.fromJson(Map<String, dynamic> parsedJson) {
+    return CharacterObject(
+        id: parsedJson['id'],
+        type: parsedJson['type'],
+        characterInfo: Character.fromJson(parsedJson['metadata']));
   }
 }
 
 class Character {
   String name;
   String icon;
+  String bgImage;
+  bool isActive;
 
-  Character({this.name, this.icon});
+  Character({this.name, this.icon, this.bgImage, this.isActive});
 
   factory Character.fromJson(Map<String, dynamic> parsedJson) {
-    return Character(name: parsedJson['legend_name'], icon: parsedJson['icon']);
+    return Character(
+        name: parsedJson['legend_name'],
+        icon: parsedJson['icon'],
+        bgImage: parsedJson['bgimage'],
+        isActive: parsedJson['is_active']);
   }
 }

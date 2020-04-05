@@ -5,9 +5,8 @@ import 'package:empires/models/Player.dart';
 import 'package:fab_circular_menu/fab_circular_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:progress_dialog/progress_dialog.dart';
 
-import './apex_flutter_app_icons.dart';
+import 'customicons/apex_flutter_app_icons.dart';
 
 void main() => runApp(MyApp());
 
@@ -48,6 +47,8 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
+  final String title;
+
   MyHomePage({Key key, this.title}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
@@ -59,34 +60,17 @@ class MyHomePage extends StatefulWidget {
   // used by the build method of the State. Fields in a Widget subclass are
   // always marked "final".
 
-  final String title;
-
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
   final GlobalKey<FabCircularMenuState> fabKey = GlobalKey();
-
-  //Controls text label being used as a search bar
-  final TextEditingController _filter = new TextEditingController();
   Widget _appBarTitle = new Text(searchTitle);
-  Icon _searchIcon = new Icon(Icons.search);
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
+    // This method is rerun every time setState is called.
     //
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
@@ -136,9 +120,6 @@ class _MyHomePageState extends State<MyHomePage> {
                           platform = "1";
                           print("HOME");
                           fabKey.currentState.close();
-                          //Scaffold.of(context).showSnackBar(SnackBar(
-//                content: Text("TEST")
-//              ));
                         }),
                     IconButton(
                         icon: Icon(ApexFlutterApp.playstation),
@@ -157,12 +138,6 @@ class _MyHomePageState extends State<MyHomePage> {
                   ])),
     );
   }
-}
-
-Player createPlayer(PlayerMetadata metadata) {
-  Player player = new Player.fromJson(metadata.player);
-  return new Player(
-      name: player.name, level: player.level, rankImage: player.rankImage);
 }
 
 //Handle Search Bar actions
@@ -190,9 +165,9 @@ class CustomSearchDelegate extends SearchDelegate {
   @override
   Widget buildResults(BuildContext context) {
     return new Container(
-      child: new FutureBuilder<PlayerMetadata>(
+      child: new FutureBuilder<PlayerData>(
         future: fetchUsersFromApi(query),
-        builder: (context, AsyncSnapshot<PlayerMetadata> snapshot) {
+        builder: (context, AsyncSnapshot<PlayerData> snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.waiting:
               return Container(
@@ -209,8 +184,6 @@ class CustomSearchDelegate extends SearchDelegate {
               }
               if (snapshot.hasData) {
                 Player player = new Player.fromJson(snapshot.data.player);
-                CharacterList cList =
-                    new CharacterList.fromJson(snapshot.data.characters);
                 return Container(
                     decoration: new BoxDecoration(color: Colors.white),
                     constraints: BoxConstraints.expand(),
@@ -237,7 +210,7 @@ class CustomSearchDelegate extends SearchDelegate {
                           Row(
                             children: <Widget>[Text("Characters: ")],
                           ),
-                          buildCharacterListView(cList)
+                          buildCharacterListView(snapshot.data)
                         ],
                       ),
                     ));
@@ -259,19 +232,16 @@ class CustomSearchDelegate extends SearchDelegate {
     );
   }
 
-  ListView buildCharacterListView(CharacterList characterList) {
+  ListView buildCharacterListView(PlayerData playerData) {
     return ListView.builder(
         physics: const NeverScrollableScrollPhysics(),
         shrinkWrap: true,
-        itemCount: characterList.characters.length,
+        itemCount: playerData.characters.length,
         itemBuilder: (context, index) {
-          CharacterMeta characterMeta =
-              CharacterMeta.fromJson(characterList.characters[index]);
-          Character character = Character.fromJson(characterMeta.characterInfo);
           return Column(
             children: <Widget>[
               CachedNetworkImage(
-                imageUrl: character.icon,
+                imageUrl: playerData.characters[index].characterInfo.icon,
                 placeholder: (context, url) => CircularProgressIndicator(),
               )
             ],
@@ -279,7 +249,7 @@ class CustomSearchDelegate extends SearchDelegate {
         });
   }
 
-  Future<PlayerMetadata> fetchUsersFromApi(String username) async {
+  Future<PlayerData> fetchUsersFromApi(String username) async {
     Map<String, String> headersDood = {
       'TRN-Api-Key': 'f999ff69-368c-4e4e-9383-30cdbbbbf812'
     };
@@ -287,8 +257,7 @@ class CustomSearchDelegate extends SearchDelegate {
         await http.get('$baseUrl/$platform/$username', headers: headersDood);
     final jsonResponse = jsonDecode(response.body);
     PlayerResponse playerResponse = new PlayerResponse.fromJson(jsonResponse);
-    PlayerMetadata playerMetadata =
-        new PlayerMetadata.fromJson(playerResponse.data);
+    PlayerData playerMetadata = new PlayerData.fromJson(playerResponse.data);
     return playerMetadata;
   }
 }
