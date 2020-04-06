@@ -6,8 +6,8 @@ import 'package:empires/models/Keys.dart';
 import 'package:empires/models/Player.dart';
 import 'package:fab_circular_menu/fab_circular_menu.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:http/http.dart' as http;
 
 import 'customicons/apex_flutter_app_icons.dart';
 
@@ -189,7 +189,7 @@ class CustomSearchDelegate extends SearchDelegate {
                     "correctly");
               }
               if (snapshot.hasData) {
-                Player player = new Player.fromJson(snapshot.data.player);
+                Player player = snapshot.data.player;
                 return Container(
                     decoration: new BoxDecoration(color: Colors.white),
                     constraints: BoxConstraints.expand(),
@@ -244,13 +244,9 @@ class CustomSearchDelegate extends SearchDelegate {
         shrinkWrap: true,
         itemCount: playerData.characters.length,
         itemBuilder: (context, index) {
-          return Column(
-            children: <Widget>[
-              CachedNetworkImage(
-                imageUrl: playerData.characters[index].characterInfo.icon,
-                placeholder: (context, url) => CircularProgressIndicator(),
-              )
-            ],
+          return CachedNetworkImage(
+            imageUrl: playerData.characters[index].characterInfo.icon,
+            placeholder: (context, url) => CircularProgressIndicator(),
           );
         });
   }
@@ -265,8 +261,7 @@ class CustomSearchDelegate extends SearchDelegate {
   }
 
   void getApiKey(BuildContext context) async {
-    final jsonString =
-    await rootBundle.loadString('assets/keys.json');
+    final jsonString = await rootBundle.loadString('assets/keys.json');
     final response = jsonDecode(jsonString);
     ApiKeys keys = ApiKeys.fromJson(response);
     apiKey = keys;

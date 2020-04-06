@@ -9,7 +9,7 @@ class PlayerResponse {
 }
 
 class PlayerData {
-  Map<String, dynamic> player;
+  Player player;
   List<CharacterObject> characters;
 
   PlayerData({this.player, this.characters});
@@ -20,7 +20,8 @@ class PlayerData {
     List<CharacterObject> characterList =
         list.map((i) => CharacterObject.fromJson(i)).toList();
     return PlayerData(
-        player: parsedJson['metadata'], characters: characterList);
+        player: Player.fromJson(parsedJson['metadata']),
+        characters: characterList);
   }
 }
 
