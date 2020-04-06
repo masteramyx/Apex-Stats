@@ -51,6 +51,7 @@ flutter:
   assets:
     - assets/images/pathfinder_portrait.jpg
     - assets/images/bloodhound_portrait.jpg
+    - assets/keys.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

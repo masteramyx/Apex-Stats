@@ -3,6 +3,8 @@
 A Flutter application to view Apex Legends Player Stats. User can search across 3 platforms; Xbox, Playstation
 and PC(Origin). Using this as a WIP to learn and experiment with flutter. Any improvements are welcome. 
 
+To run the app, create an API key at the website below and put it in [assets/keys.json]
+
 
 #API
 

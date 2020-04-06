@@ -1,10 +1,13 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:empires/models/Keys.dart';
 import 'package:empires/models/Player.dart';
 import 'package:fab_circular_menu/fab_circular_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter/services.dart' show rootBundle;
 
 import 'customicons/apex_flutter_app_icons.dart';
 
@@ -66,6 +69,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final GlobalKey<FabCircularMenuState> fabKey = GlobalKey();
+
   Widget _appBarTitle = new Text(searchTitle);
 
   @override
@@ -112,10 +116,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   animationDuration: Duration(milliseconds: 400),
                   children: <Widget>[
                     IconButton(
-                        icon:
-                            //ImageIcon(AssetImage("images/xbox.png"),
-                            //  color: Color(0xFF3A5A98)),
-                            Icon(ApexFlutterApp.xbox),
+                        icon: Icon(ApexFlutterApp.xbox),
                         onPressed: () {
                           platform = "1";
                           print("HOME");
@@ -142,6 +143,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
 //Handle Search Bar actions
 class CustomSearchDelegate extends SearchDelegate {
+  CustomSearchDelegate();
+
   @override
   List<Widget> buildActions(BuildContext context) {
     return [
@@ -155,6 +158,9 @@ class CustomSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildLeading(BuildContext context) {
+    if (apiKey == null) {
+      getApiKey(context);
+    }
     return IconButton(
         icon: Icon(Icons.arrow_back),
         onPressed: () {
@@ -166,7 +172,7 @@ class CustomSearchDelegate extends SearchDelegate {
   Widget buildResults(BuildContext context) {
     return new Container(
       child: new FutureBuilder<PlayerData>(
-        future: fetchUsersFromApi(query),
+        future: getUsersFromApi(query),
         builder: (context, AsyncSnapshot<PlayerData> snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.waiting:
@@ -249,15 +255,21 @@ class CustomSearchDelegate extends SearchDelegate {
         });
   }
 
-  Future<PlayerData> fetchUsersFromApi(String username) async {
-    Map<String, String> headersDood = {
-      'TRN-Api-Key': 'f999ff69-368c-4e4e-9383-30cdbbbbf812'
-    };
+  Future<PlayerData> getUsersFromApi(String username) async {
+    Map<String, String> headersDood = {apiKey.key: apiKey.value};
     final response =
         await http.get('$baseUrl/$platform/$username', headers: headersDood);
     final jsonResponse = jsonDecode(response.body);
     PlayerResponse playerResponse = new PlayerResponse.fromJson(jsonResponse);
     return playerResponse.data;
+  }
+
+  void getApiKey(BuildContext context) async {
+    final jsonString =
+    await rootBundle.loadString('assets/keys.json');
+    final response = jsonDecode(jsonString);
+    ApiKeys keys = ApiKeys.fromJson(response);
+    apiKey = keys;
   }
 }
 
@@ -268,3 +280,4 @@ const String origin = "5";
 const String baseUrl = "https://public-api.tracker.gg/apex/v1/standard/profile";
 //Temp global key for platform filter
 String platform = "5";
+ApiKeys apiKey;
